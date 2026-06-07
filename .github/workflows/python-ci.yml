@@ -34,6 +34,10 @@ on:
         required: false
         type: boolean
         default: false
+      run-precommit:
+        required: false
+        type: boolean
+        default: false
 
       # --- per-tool config ---
       pylint-fail-under:
@@ -44,6 +48,14 @@ on:
         required: false
         type: string
         default: "80"
+      check-precommit-versions:
+        required: false
+        type: boolean
+        default: true
+      check-precommit-files:
+        required: false
+        type: boolean
+        default: false
 
 jobs:
 
@@ -92,9 +104,24 @@ jobs:
           source-dir: ${{ inputs.source-dir }}
           fail-under: ${{ inputs.pylint-fail-under }}
 
+  format-pre-commit:
+    name: "Pre-commit Check"
+    if: ${{ inputs.run-precommit }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: mti-eng/actions/format-pre-commit-check@main
+        with:
+          python-version: ${{ inputs.python-version }}
+          check-precommit-versions: ${{ inputs.check-precommit-versions }}
+          check-precommit-files: ${{ inputs.check-precommit-files }}
+
+
   test-pytest:
     name: "Test (pytest)"
-    needs: [format-black, format-isort, lint-flake8, lint-pylint]
+    needs: [format-black, format-isort, lint-flake8, lint-pylint, format-pre-commit]
     if: >-
       ${{ always() && inputs.run-pytest &&
           !contains(needs.*.result, 'failure') &&

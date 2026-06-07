@@ -1,0 +1,53 @@
+name: "Pre-commit Check"
+description: "Check pre-commit hook versions and/or run hooks against PR-changed files"
+
+inputs:
+  python-version:
+    description: "Python version to use"
+    required: false
+    default: "3.12"
+  check-precommit-versions:
+    description: "Fail if any pre-commit hooks are out of date (runs autoupdate)"
+    required: false
+    default: "true"
+  check-precommit-files:
+    description: "Fail if any PR-changed files do not pass pre-commit hooks"
+    required: false
+    default: "false"
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+        cache: "pip"
+
+    - name: Install pre-commit
+      shell: bash
+      run: pip install pre-commit
+
+    - name: Run pre-commit autoupdate
+      if: ${{ inputs.check-precommit-versions == 'true' }}
+      shell: bash
+      run: pre-commit autoupdate
+
+    - name: Check for outdated hooks
+      if: ${{ inputs.check-precommit-versions == 'true' }}
+      shell: bash
+      run: |
+        if git diff --quiet .pre-commit-config.yaml; then
+          echo "All pre-commit hooks are up to date."
+        else
+          echo "::error::One or more pre-commit hooks are out of date."
+          echo "::error::Run 'pre-commit autoupdate' locally, commit the updated .pre-commit-config.yaml, and push again."
+          echo ""
+          echo "Outdated hooks:"
+          git diff .pre-commit-config.yaml
+          exit 1
+        fi
+
+    - name: Run pre-commit on changed files
+      if: ${{ inputs.check-precommit-files == 'true' }}
+      shell: bash
+      run: pre-commit run --from-ref origin/${{ github.base_ref }} --to-ref HEAD
