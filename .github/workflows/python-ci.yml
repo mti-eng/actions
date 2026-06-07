@@ -92,33 +92,13 @@ jobs:
           source-dir: ${{ inputs.source-dir }}
           fail-under: ${{ inputs.pylint-fail-under }}
 
-  gate:
-    name: "CI Gate"
-    if: always()
-    needs: [format-black, format-isort, lint-flake8, lint-pylint]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check all enabled jobs passed
-        shell: bash
-        run: |
-          results='${{ toJSON(needs) }}'
-          echo "$results" | python3 -c "
-          import sys, json
-          needs = json.load(sys.stdin)
-          failed = [
-              name for name, data in needs.items()
-              if data['result'] not in ('success', 'skipped')
-          ]
-          if failed:
-              print('Failed jobs:', failed)
-              sys.exit(1)
-          print('All checks passed or skipped')
-          "
-
   test-pytest:
     name: "Test (pytest)"
-    if: ${{ inputs.run-pytest }}
-    needs: [gate]
+    needs: [format-black, format-isort, lint-flake8, lint-pylint]
+    if: >-
+      ${{ always() && inputs.run-pytest &&
+          !contains(needs.*.result, 'failure') &&
+          !contains(needs.*.result, 'cancelled') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
