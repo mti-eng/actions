@@ -48,11 +48,11 @@ on:
         required: false
         type: string
         default: "80"
-      check-precommit-versions:
+      precommit-check-versions:
         required: false
         type: boolean
         default: true
-      check-precommit-files:
+      precommit-check-files:
         required: false
         type: boolean
         default: false
@@ -115,8 +115,8 @@ jobs:
       - uses: mti-eng/actions/format-pre-commit-check@main
         with:
           python-version: ${{ inputs.python-version }}
-          check-precommit-versions: ${{ inputs.check-precommit-versions }}
-          check-precommit-files: ${{ inputs.check-precommit-files }}
+          check-precommit-versions: ${{ inputs.precommit-check-versions }}
+          check-precommit-files: ${{ inputs.precommit-check-files }}
 
 
   test-pytest:
