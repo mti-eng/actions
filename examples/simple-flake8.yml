@@ -1,0 +1,19 @@
+# Minimal pattern: one job, one action.
+# Reference: mti-eng/actions/lint-flake8@main
+name: Lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint:
+    name: Lint (flake8)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mti-eng/actions/lint-flake8@main
+        with:
+          python-version: "3.11"   # default
+          source-dir: "."          # default - change to "src" if needed

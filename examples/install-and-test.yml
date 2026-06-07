@@ -1,0 +1,29 @@
+# Advanced pattern: install (with private package auth) + test with coverage.
+# Reference: mti-eng/actions/install-dependencies@main + mti-eng/actions/test-pytest@main
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: mti-eng/actions/install-dependencies@main
+        with:
+          python-version: "3.11"              # default
+          token: ${{ secrets.CI_TOKEN }}      # omit if no private packages
+          working-directory: "."              # default
+          extras: "dev"                       # default; set "" for bare install
+
+      - uses: mti-eng/actions/test-pytest@main
+        with:
+          python-version: "3.11"              # default
+          working-directory: "."              # default
+          coverage-threshold: "80"            # default is "0" (disabled)
+          token: ${{ secrets.CI_TOKEN }}      # omit if no private packages
