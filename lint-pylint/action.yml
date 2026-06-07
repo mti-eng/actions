@@ -1,0 +1,32 @@
+name: "Lint (pylint)"
+description: "Run pylint on a Python source directory with a configurable minimum score"
+
+inputs:
+  python-version:
+    description: "Python version to use"
+    required: false
+    default: "3.11"
+  source-dir:
+    description: "Directory to lint"
+    required: false
+    default: "."
+  fail-under:
+    description: "Minimum pylint score (0.0–10.0)"
+    required: false
+    default: "8.0"
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+        cache: "pip"
+
+    - name: Install pylint
+      shell: bash
+      run: pip install pylint
+
+    - name: Run pylint
+      shell: bash
+      run: pylint --fail-under=${{ inputs.fail-under }} ${{ inputs.source-dir }}

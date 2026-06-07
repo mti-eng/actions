@@ -1,0 +1,132 @@
+# .github/workflows/python-ci.yml
+name: Python CI
+
+on:
+  workflow_call:
+    inputs:
+      python-version:
+        required: false
+        type: string
+        default: "3.11"
+      source-dir:
+        required: false
+        type: string
+        default: "src"
+
+      # --- opt-in flags ---
+      run-black:
+        required: false
+        type: boolean
+        default: true
+      run-isort:
+        required: false
+        type: boolean
+        default: true
+      run-flake8:
+        required: false
+        type: boolean
+        default: true
+      run-pylint:
+        required: false
+        type: boolean
+        default: false
+      run-pytest:
+        required: false
+        type: boolean
+        default: false
+
+      # --- per-tool config ---
+      pylint-fail-under:
+        required: false
+        type: string
+        default: "8.0"
+      coverage-threshold:
+        required: false
+        type: string
+        default: "80"
+
+jobs:
+
+  format-black:
+    name: "Format Check (black)"
+    if: ${{ inputs.run-black }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mti-eng/actions/format-black@main
+        with:
+          python-version: ${{ inputs.python-version }}
+          source-dir: ${{ inputs.source-dir }}
+
+  format-isort:
+    name: "Format Check (isort)"
+    if: ${{ inputs.run-isort }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mti-eng/actions/format-isort@main
+        with:
+          python-version: ${{ inputs.python-version }}
+          source-dir: ${{ inputs.source-dir }}
+
+  lint-flake8:
+    name: "Lint (flake8)"
+    if: ${{ inputs.run-flake8 }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mti-eng/actions/lint-flake8@main
+        with:
+          python-version: ${{ inputs.python-version }}
+          source-dir: ${{ inputs.source-dir }}
+
+  lint-pylint:
+    name: "Lint (pylint)"
+    if: ${{ inputs.run-pylint }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mti-eng/actions/lint-pylint@main
+        with:
+          python-version: ${{ inputs.python-version }}
+          source-dir: ${{ inputs.source-dir }}
+          fail-under: ${{ inputs.pylint-fail-under }}
+
+  gate:
+    name: "CI Gate"
+    if: always()
+    needs: [format-black, format-isort, lint-flake8, lint-pylint]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check all enabled jobs passed
+        shell: bash
+        run: |
+          results='${{ toJSON(needs) }}'
+          echo "$results" | python3 -c "
+          import sys, json
+          needs = json.load(sys.stdin)
+          failed = [
+              name for name, data in needs.items()
+              if data['result'] not in ('success', 'skipped')
+          ]
+          if failed:
+              print('Failed jobs:', failed)
+              sys.exit(1)
+          print('All checks passed or skipped')
+          "
+
+  test-pytest:
+    name: "Test (pytest)"
+    if: ${{ inputs.run-pytest }}
+    needs: [gate]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup private package auth
+        uses: mti-eng/actions/setup-private-install@main
+        with:
+          token: ${{ secrets.CI_TOKEN }}
+      - uses: mti-eng/actions/test-pytest@main
+        with:
+          python-version: ${{ inputs.python-version }}
+          coverage-threshold: ${{ inputs.coverage-threshold }}

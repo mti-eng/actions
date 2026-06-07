@@ -1,0 +1,19 @@
+name: Setup Private Package Authentication
+description: >
+  Configures git credentials for installing private mti-eng packages.
+  Works with pip, uv, and any git-based install. Requires CI_TOKEN
+  to be set as a repository secret on the calling repo.
+
+inputs:
+  token:
+    description: PAT with read access to mti-eng private repos
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Configure git credential helper
+      shell: bash
+      run: |
+        echo "${{ inputs.token }}" | gh auth login --with-token
+        gh auth setup-git
