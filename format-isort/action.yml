@@ -1,0 +1,28 @@
+name: "Format Check (isort)"
+description: "Verify isort import ordering without modifying files"
+
+inputs:
+  python-version:
+    description: "Python version to use"
+    required: false
+    default: "3.11"
+  source-dir:
+    description: "Directory to check"
+    required: false
+    default: "."
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+        cache: "pip"
+
+    - name: Install isort
+      shell: bash
+      run: pip install isort
+
+    - name: Check isort
+      shell: bash
+      run: isort --check-only --diff ${{ inputs.source-dir }}

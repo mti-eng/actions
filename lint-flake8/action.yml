@@ -1,0 +1,29 @@
+name: "Lint (flake8)"
+description: "Run flake8 linting on Python source"
+
+inputs:
+  python-version:
+    description: "Python version to use"
+    required: false
+    default: "3.11"
+  source-dir:
+    description: "Directory to lint"
+    required: false
+    default: "."
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+        cache: "pip"
+
+    - name: Install flake8
+      shell: bash
+      run: pip install flake8
+
+    - name: Run flake8
+      shell: bash
+      run: flake8 ${{ inputs.source-dir }}
+    
