@@ -2,9 +2,9 @@
 
 **Reference:** `mti-eng/actions/setup-private-install@main`
 
-Configures git credentials so that `pip`, `uv`, and any git-based install can reach private
-`mti-eng` repositories. Uses the `gh` CLI credential helper — pre-installed on all
-GitHub-hosted runners — so credentials operate at the OS level with no per-tool configuration.
+Configures authentication for private `mti-eng` repositories by writing `~/.netrc` and
+`~/.git-credentials` directly. Covers `pip`, `uv` (including
+`[tool.uv.sources]` entries), `curl`, and any `git+https://` dependency.
 
 ## Inputs
 

@@ -2,24 +2,24 @@
 
 **Reference:** `mti-eng/actions/install-dependencies@main`
 
-Sets up Python with pip caching, optionally configures private package authentication, and
-runs `pip install`. A single step that replaces the common setup-python + auth + install
-boilerplate.
+Sets up Python and installs `uv`, optionally configures private package authentication,
+then installs dependencies. If a `uv.lock` file is present it runs `uv sync --frozen`;
+otherwise it falls back to `uv pip install -e .`.
 
 ## Inputs
 
 | Input | Default | Description |
 |-------|---------|-------------|
-| `python-version` | `"3.11"` | Python version for `setup-python` (pip cache enabled) |
+| `python-version` | `"3.11"` | Python version for `setup-python` |
 | `token` | `""` | PAT for private `mti-eng` packages; omit for public-only installs |
-| `working-directory` | `"."` | Directory to run `pip install` from |
-| `extras` | `"dev"` | Extras group to install — leave empty for a bare `pip install -e .` |
+| `working-directory` | `"."` | Directory containing `pyproject.toml` |
+| `extras` | `""` | Comma-separated extras (e.g. `"dev"` or `"dev,test"`); leave empty for a bare install |
 
 ## Behavior
 
 - If `token` is provided, [setup-private-install](../setup-private-install/) runs first.
-- If `extras` is non-empty, installs via `pip install -e ".[extras]"`.
-- If `extras` is empty, installs via `pip install -e .`.
+- If `uv.lock` is present, installs via `uv sync --frozen [--extra <x>...]`.
+- If no `uv.lock`, installs via `uv pip install -e .[extras]` (or bare `-e .` if extras is empty).
 
 ## Usage
 
@@ -34,7 +34,7 @@ jobs:
           python-version: "3.11"              # default
           token: ${{ secrets.CI_TOKEN }}      # omit if no private packages
           working-directory: "."              # default
-          extras: "dev"                       # default; set "" for bare install
+          extras: ""                          # default; e.g. "dev" or "dev,test"
 ```
 
 Pass `token: ${{ secrets.CI_TOKEN }}` only if the project depends on private `mti-eng`

@@ -1,29 +1,30 @@
 ---
-name: "Install Dependencies"
+name: Install Python Dependencies
 description: >
-  "Set up Python, optionally configure private package auth, and pip install"
+  Installs Python project dependencies using uv or pip depending on
+  whether a uv.lock file is present. uv is always used as the installer;
+  pip-based projects benefit from faster resolution with no changes required.
 
 inputs:
   python-version:
-    description: "Python version to use"
+    description: Python version to set up
     required: false
     default: "3.11"
-  token:
-    description: >-
-      PAT with read access to mti-eng private repos
-      (omit for public-only installs)
-    required: false
-    default: ""
-  working-directory:
-    description: "Directory to run pip install from"
-    required: false
-    default: "."
   extras:
-    description: >-
-      Extras group to install (e.g. dev, test); leave empty to
-      install without extras
+    description: >
+      Optional extras to install (e.g. "dev" or "dev,test").
+      Comma-separated for multiple extras.
     required: false
-    default: "dev"
+    default: 'dev'
+  working-directory:
+    description: Directory containing pyproject.toml
+    required: false
+    default: '.'
+  token:
+    description: >
+      PAT for private mti-eng package access. Leave empty if no private deps.
+    required: false
+    default: ''
 
 runs:
   using: "composite"
@@ -31,7 +32,15 @@ runs:
     - uses: actions/setup-python@v5
       with:
         python-version: ${{ inputs.python-version }}
-        cache: "pip"
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v5
+      with:
+        enable-cache: true
+        cache-dependency-glob: |
+          **/uv.lock
+          **/pyproject.toml
+          **/requirements*.txt
 
     - name: Configure private package auth
       if: ${{ inputs.token != '' }}
@@ -43,8 +52,22 @@ runs:
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
-        if [ -n "${{ inputs.extras }}" ]; then
-          pip install -e ".[${{ inputs.extras }}]"
+        if [ -f "uv.lock" ]; then
+          echo "uv.lock detected — using uv sync --frozen"
+          EXTRAS="${{ inputs.extras }}"
+          if [ -n "$EXTRAS" ]; then
+            # Split "dev,test" into --extra dev --extra test
+            EXTRA_FLAGS=$(echo "$EXTRAS" | tr ',' '\n' \
+              | sed 's/^/--extra /' | tr '\n' ' ')
+            uv sync --frozen $EXTRA_FLAGS
+          else
+            uv sync --frozen
+          fi
         else
-          pip install -e .
+          echo "No uv.lock — using uv pip install"
+          if [ -n "${{ inputs.extras }}" ]; then
+            uv pip install -e ".[${{ inputs.extras }}]"
+          else
+            uv pip install -e .
+          fi
         fi
