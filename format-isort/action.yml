@@ -1,3 +1,4 @@
+---
 name: "Format Check (isort)"
 description: "Verify isort import ordering without modifying files"
 

@@ -58,7 +58,7 @@ and rotation.
 ### Token name (in each repo)
 
 The secret **must** be named `CI_TOKEN` on every repo - this is the name this action and
-`python-ci.yml` expect. 
+`python-ci.yml` expect.
 
 ### Creating the token
 

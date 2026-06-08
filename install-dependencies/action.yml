@@ -1,5 +1,7 @@
+---
 name: "Install Dependencies"
-description: "Set up Python, optionally configure private package auth, and pip install"
+description: >
+  "Set up Python, optionally configure private package auth, and pip install"
 
 inputs:
   python-version:
@@ -7,7 +9,9 @@ inputs:
     required: false
     default: "3.11"
   token:
-    description: "PAT with read access to mti-eng private repos (omit for public-only installs)"
+    description: >-
+      PAT with read access to mti-eng private repos
+      (omit for public-only installs)
     required: false
     default: ""
   working-directory:
@@ -15,7 +19,9 @@ inputs:
     required: false
     default: "."
   extras:
-    description: "Extras group to install (e.g. dev, test); leave empty to install without extras"
+    description: >-
+      Extras group to install (e.g. dev, test); leave empty to
+      install without extras
     required: false
     default: "dev"
 

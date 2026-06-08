@@ -1,3 +1,4 @@
+---
 name: "Format Check (black)"
 description: "Verify black formatting without modifying files"
 

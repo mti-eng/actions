@@ -1,8 +1,9 @@
 # Minimal pattern: one job, one action.
 # Reference: mti-eng/actions/lint-flake8@main
+---
 name: Lint
 
-on:
+"on":
   push:
     branches: [main]
   pull_request:

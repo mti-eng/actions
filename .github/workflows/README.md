@@ -42,18 +42,18 @@ jobs:
     with:
       python-version: "3.11"          # default
       source-dir: "src"               # default
-      
+
       run-black: true                 # default
       run-isort: true                 # default
       run-flake8: true                # default
-      
+
       run-pylint: false               # default
       pylint-fail-under: "8.0"        # default
-      
+
       run-precommit: false            # default
       precommit-check-versions: true  # default
       precommit-check-files: false    # default
-      
+
       run-pytest: false               # default — set true to enable tests
       coverage-threshold: "80"        # default
 ```

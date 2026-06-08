@@ -1,7 +1,8 @@
 # .github/workflows/python-ci.yml
+---
 name: Python CI
 
-on:
+"on":
   workflow_call:
     inputs:
       python-version:
@@ -121,7 +122,12 @@ jobs:
 
   test-pytest:
     name: "Test (pytest)"
-    needs: [format-black, format-isort, lint-flake8, lint-pylint, format-pre-commit]
+    needs:
+      - format-black
+      - format-isort
+      - lint-flake8
+      - lint-pylint
+      - format-pre-commit
     if: >-
       ${{ always() && inputs.run-pytest &&
           !contains(needs.*.result, 'failure') &&

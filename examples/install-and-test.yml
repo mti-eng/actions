@@ -1,8 +1,10 @@
 # Advanced pattern: install (with private package auth) + test with coverage.
-# Reference: mti-eng/actions/install-dependencies@main + mti-eng/actions/test-pytest@main
+# Reference: mti-eng/actions/install-dependencies@main
+#            + mti-eng/actions/test-pytest@main
+---
 name: Test
 
-on:
+"on":
   push:
     branches: [main]
   pull_request:

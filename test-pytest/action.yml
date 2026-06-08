@@ -1,3 +1,4 @@
+---
 name: "Test (pytest)"
 description: "Run pytest with coverage"
 
@@ -15,7 +16,9 @@ inputs:
     required: false
     default: "0"
   token:
-    description: "PAT with read access to mti-eng private repos (omit for public-only installs)"
+    description: >-
+      PAT with read access to mti-eng private repos
+      (omit for public-only installs)
     required: false
     default: ""
 
@@ -38,8 +41,13 @@ runs:
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
+        threshold="${{ inputs.coverage-threshold }}"
+        cov_args=()
+        if [ "$threshold" != "0" ]; then
+          cov_args+=("--cov-fail-under=$threshold")
+        fi
         pytest \
           --tb=short \
           --cov \
           --cov-report=term-missing \
-          ${{ inputs.coverage-threshold != '0' && format('--cov-fail-under={0}', inputs.coverage-threshold) || '' }}
+          "${cov_args[@]}"

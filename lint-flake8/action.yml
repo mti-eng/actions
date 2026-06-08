@@ -1,3 +1,4 @@
+---
 name: "Lint (flake8)"
 description: "Run flake8 linting on Python source"
 
@@ -26,4 +27,3 @@ runs:
     - name: Run flake8
       shell: bash
       run: flake8 ${{ inputs.source-dir }}
-    

@@ -1,5 +1,7 @@
+---
 name: "Lint (pylint)"
-description: "Run pylint on a Python source directory with a configurable minimum score"
+description: >
+  "Run pylint on a Python source directory with a configurable minimum score"
 
 inputs:
   python-version:
