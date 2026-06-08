@@ -33,7 +33,7 @@ actions and callable workflows so individual repos don't repeat CI boilerplate.
 | Action | Directory | Purpose |
 |--------|-----------|---------|
 | Install Dependencies | [install-dependencies](install-dependencies/) | Set up Python + uv, optionally auth private packages, and install via `uv sync` or `uv pip install` |
-| Private Package Auth | [setup-private-install](setup-private-install/) | Write `~/.netrc` and git credentials for private package installs. |
+| Private Package Auth | [setup-private-install](setup-private-install/) | Configure `gh` CLI as git credential helper + `~/.netrc` for private package installs |
 
 ## Reusable Workflows
 

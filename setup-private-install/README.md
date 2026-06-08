@@ -2,9 +2,9 @@
 
 **Reference:** `mti-eng/actions/setup-private-install@main`
 
-Configures authentication for private `mti-eng` repositories by writing `~/.netrc` and
-`~/.git-credentials` directly. Covers `pip`, `uv` (including
-`[tool.uv.sources]` entries), `curl`, and any `git+https://` dependency.
+Configures authentication for private `mti-eng` repositories. Uses the `gh` CLI as the git
+credential helper so `pip`, `uv`, and any `git+https://` dependency can reach private repos.
+Also writes `~/.netrc` for uv's own HTTP client.
 
 ## Inputs
 

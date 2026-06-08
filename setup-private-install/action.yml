@@ -2,8 +2,8 @@
 name: Setup Private Package Authentication
 description: >
   Configures authentication for private mti-eng packages on GitHub.
-  Covers git+https:// deps (pip and uv), and uv [tool.uv.sources] git deps
-  via ~/.netrc.
+  Uses gh CLI as the git credential helper (covers pip, uv, and any
+  git+https:// dependency) and ~/.netrc for uv's own HTTP client.
 
 inputs:
   token:
@@ -13,20 +13,15 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Configure git credentials
+    - name: Configure git credential helper
       shell: bash
       run: |
-        git config --global credential.helper store
-        echo "https://x-access-token:${{ inputs.token }}@github.com" \
-          >> ~/.git-credentials
+        echo "${{ inputs.token }}" | gh auth login --with-token
+        gh auth setup-git
 
     - name: Configure netrc
       shell: bash
       run: |
-        # ~/.netrc is read natively by uv's HTTP client, pip, curl, and git.
-        # This covers uv sync with [tool.uv.sources] entries and any direct
-        # HTTPS fetch to github.com — paths the git credential helper does
-        # not reach.
         CRED="machine github.com login x-access-token"
         echo "$CRED password ${{ inputs.token }}" >> ~/.netrc
         chmod 600 ~/.netrc
