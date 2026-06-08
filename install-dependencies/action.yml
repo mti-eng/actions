@@ -12,10 +12,13 @@ inputs:
     default: "3.11"
   extras:
     description: >
-      Optional extras to install (e.g. "dev" or "dev,test").
-      Comma-separated for multiple extras.
+      Optional extras to install (e.g. "plotting" or "plotting,viz").
+      Comma-separated for multiple extras. Corresponds to
+      [project.optional-dependencies] in pyproject.toml.
+      Leave empty (default) when dev tools are in [dependency-groups] —
+      uv sync includes all dependency groups automatically.
     required: false
-    default: 'dev'
+    default: ''
   working-directory:
     description: Directory containing pyproject.toml
     required: false
