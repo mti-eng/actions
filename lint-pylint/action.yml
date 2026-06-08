@@ -23,11 +23,12 @@ runs:
     - uses: actions/setup-python@v5
       with:
         python-version: ${{ inputs.python-version }}
-        cache: "pip"
+
+    - uses: astral-sh/setup-uv@v5
 
     - name: Install pylint
       shell: bash
-      run: pip install pylint
+      run: uv tool install pylint
 
     - name: Run pylint
       shell: bash

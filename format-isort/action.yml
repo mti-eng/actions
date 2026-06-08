@@ -18,11 +18,12 @@ runs:
     - uses: actions/setup-python@v5
       with:
         python-version: ${{ inputs.python-version }}
-        cache: "pip"
+
+    - uses: astral-sh/setup-uv@v5
 
     - name: Install isort
       shell: bash
-      run: pip install isort
+      run: uv tool install isort
 
     - name: Check isort
       shell: bash

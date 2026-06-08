@@ -18,11 +18,12 @@ runs:
     - uses: actions/setup-python@v5
       with:
         python-version: ${{ inputs.python-version }}
-        cache: "pip"
+
+    - uses: astral-sh/setup-uv@v5
 
     - name: Install black
       shell: bash
-      run: pip install black
+      run: uv tool install black
 
     - name: Check black
       shell: bash

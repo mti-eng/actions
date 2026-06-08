@@ -18,11 +18,12 @@ runs:
     - uses: actions/setup-python@v5
       with:
         python-version: ${{ inputs.python-version }}
-        cache: "pip"
+
+    - uses: astral-sh/setup-uv@v5
 
     - name: Install flake8
       shell: bash
-      run: pip install flake8
+      run: uv tool install flake8
 
     - name: Run flake8
       shell: bash

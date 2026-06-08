@@ -24,11 +24,12 @@ runs:
     - uses: actions/setup-python@v5
       with:
         python-version: ${{ inputs.python-version }}
-        cache: "pip"
+
+    - uses: astral-sh/setup-uv@v5
 
     - name: Install pre-commit
       shell: bash
-      run: pip install pre-commit
+      run: uv tool install pre-commit
 
     - name: Run pre-commit autoupdate
       if: ${{ inputs.check-precommit-versions == 'true' }}
