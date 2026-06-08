@@ -1,6 +1,11 @@
-# .github/workflows/python-ci.yml
+# .github/workflows/ci-base.yml
 ---
-name: Python CI
+name: Python CI (Base)
+
+# Full-featured base workflow. Prefer the named tier wrappers for most repos:
+#   ci-simple.yml   — black + isort + flake8 + optional tests (no coverage)
+#   ci-standard.yml — simple + pre-commit + tests with 80% coverage
+#   ci-strict.yml   — standard + pylint (everything on)
 
 "on":
   workflow_call:

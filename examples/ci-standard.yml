@@ -1,0 +1,17 @@
+# Tier: Standard — black + isort + flake8 + pre-commit + pytest (80% coverage)
+# Reference: mti-eng/actions/.github/workflows/ci-standard.yml@main
+---
+name: CI
+
+"on":
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  ci-standard:
+    uses: mti-eng/actions/.github/workflows/ci-standard.yml@main
+    secrets: inherit
+    with:
+      source-dir: "src"
+      # coverage-threshold: "80"   # default

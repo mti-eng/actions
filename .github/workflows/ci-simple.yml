@@ -1,0 +1,40 @@
+# .github/workflows/ci-simple.yml
+---
+name: Python CI — Simple
+
+# Tier: Simple
+#   black + isort + flake8
+#   pytest is opt-in; no coverage gate when enabled
+#
+# For richer checks use ci-standard.yml or ci-strict.yml
+
+"on":
+  workflow_call:
+    inputs:
+      python-version:
+        required: false
+        type: string
+        default: "3.11"
+      source-dir:
+        required: false
+        type: string
+        default: "src"
+      run-pytest:
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  ci-simple:
+    uses: mti-eng/actions/.github/workflows/ci-base.yml@main
+    secrets: inherit
+    with:
+      python-version: ${{ inputs.python-version }}
+      source-dir: ${{ inputs.source-dir }}
+      run-black: true
+      run-isort: true
+      run-flake8: true
+      run-pylint: false
+      run-precommit: false
+      run-pytest: ${{ inputs.run-pytest }}
+      coverage-threshold: "0"

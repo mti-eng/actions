@@ -1,0 +1,40 @@
+# .github/workflows/ci-standard.yml
+---
+name: Python CI — Standard
+
+# Tier: Standard
+#   black + isort + flake8 + pre-commit + pytest (80% coverage gate)
+#
+# For stricter checks (pylint) use ci-strict.yml
+# For lighter checks use ci-simple.yml
+
+"on":
+  workflow_call:
+    inputs:
+      python-version:
+        required: false
+        type: string
+        default: "3.11"
+      source-dir:
+        required: false
+        type: string
+        default: "src"
+      coverage-threshold:
+        required: false
+        type: string
+        default: "80"
+
+jobs:
+  ci-standard:
+    uses: mti-eng/actions/.github/workflows/ci-base.yml@main
+    secrets: inherit
+    with:
+      python-version: ${{ inputs.python-version }}
+      source-dir: ${{ inputs.source-dir }}
+      run-black: true
+      run-isort: true
+      run-flake8: true
+      run-pylint: false
+      run-precommit: true
+      run-pytest: true
+      coverage-threshold: ${{ inputs.coverage-threshold }}

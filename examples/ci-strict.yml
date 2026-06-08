@@ -1,0 +1,20 @@
+# Tier: Strict - everything: format + lint + pre-commit + pytest
+# Reference: mti-eng/actions/.github/workflows/ci-strict.yml@main
+---
+name: CI
+
+"on":
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  ci-strict:
+    uses: mti-eng/actions/.github/workflows/ci-strict.yml@main
+    secrets: inherit
+    with:
+      source-dir: "src"
+      # coverage-threshold: "80"          # default
+      # pylint-fail-under: "8.0"          # default
+      # precommit-check-versions: true    # default
+      # precommit-check-files: false      # default

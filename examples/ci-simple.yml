@@ -1,0 +1,17 @@
+# Tier: Simple — black + isort + flake8 (pytest opt-in, no coverage gate)
+# Reference: mti-eng/actions/.github/workflows/ci-simple.yml@main
+---
+name: CI
+
+"on":
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  ci-simple:
+    uses: mti-eng/actions/.github/workflows/ci-simple.yml@main
+    secrets: inherit
+    with:
+      source-dir: "src"
+      # run-pytest: true   # uncomment to enable tests (no coverage gate)

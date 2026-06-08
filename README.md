@@ -37,9 +37,17 @@ actions and callable workflows so individual repos don't repeat CI boilerplate.
 
 ## Reusable Workflows
 
-| Workflow | Purpose |
-|----------|---------|
-| [python-ci.yml](.github/workflows/) | Full Python CI: format + lint (parallel) → test (blocked if any prior job failed) |
+Three tier wrappers cover most repos. Each calls `ci-base.yml` with pre-configured flags;
+inapplicable jobs appear as **skipped** in the Actions UI.
+
+| Workflow | Tier | Checks |
+|----------|------|--------|
+| [ci-simple.yml](.github/workflows/) | Simple | black + isort + flake8 · pytest opt-in (no coverage gate) |
+| [ci-standard.yml](.github/workflows/) | Standard | Simple + pre-commit + pytest (80% coverage) |
+| [ci-strict.yml](.github/workflows/) | Strict | Standard + pylint |
+| [ci-base.yml](.github/workflows/) | Base | All flags individually configurable |
+
+See [.github/workflows/README.md](.github/workflows/) for full input reference and per-tier usage examples.
 
 ---
 
@@ -51,7 +59,10 @@ Ready-to-copy examples are in [examples/](examples/):
 |------|---------|
 | [simple-flake8.yml](examples/simple-flake8.yml) | Minimal: single lint job |
 | [install-and-test.yml](examples/install-and-test.yml) | Install with private auth + test with coverage |
-| [python-ci-workflow.yml](examples/python-ci-workflow.yml) | Full CI via the reusable `python-ci.yml` workflow |
+| [ci-simple.yml](examples/ci-simple.yml) | CI via the `ci-simple.yml` tier |
+| [ci-standard.yml](examples/ci-standard.yml) | CI via the `ci-standard.yml` tier |
+| [ci-strict.yml](examples/ci-strict.yml) | CI via the `ci-strict.yml` tier |
+| [ci-base.yml](examples/ci-base.yml) | CI via the `ci-base.yml` base workflow (all flags) |
 
 ---
 

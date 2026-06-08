@@ -1,6 +1,6 @@
-# Simplest integration: delegate all format+lint+test to the shared
-# reusable workflow.
-# Reference: mti-eng/actions/.github/workflows/python-ci.yml@main
+# Base workflow — all flags individually configurable.
+# Use a tier workflow (ci-simple/standard/strict)
+# Reference: mti-eng/actions/.github/workflows/ci-base.yml@main
 ---
 name: CI
 
@@ -11,7 +11,7 @@ name: CI
 
 jobs:
   ci:
-    uses: mti-eng/actions/.github/workflows/python-ci.yml@main
+    uses: mti-eng/actions/.github/workflows/ci-base.yml@main
     secrets: inherit
     with:
       python-version: "3.11"          # default

@@ -1,13 +1,114 @@
-# python-ci.yml — Reusable Python CI Workflow
+# Reusable Workflows
 
-**Reference:** `mti-eng/actions/.github/workflows/python-ci.yml@main`
+## CI Tiers
 
-Full Python CI pipeline triggered via `workflow_call`. Format and lint jobs run in parallel;
-the test job declares them as dependencies and only runs if none failed or were cancelled.
+Choose the tier that matches your repo's needs. Each calls `ci-base.yml` with pre-configured
+flags; inapplicable jobs appear as **skipped** in the Actions UI.
+
+| Workflow | Tier | black | isort | flake8 | pre-commit | pylint | pytest |
+|----------|------|:-----:|:-----:|:------:|:----------:|:------:|:------:|
+| `ci-simple.yml` | Simple | ✅ | ✅ | ✅ | — | — | opt-in |
+| `ci-standard.yml` | Standard | ✅ | ✅ | ✅ | ✅ | — | ✅ (80%) |
+| `ci-strict.yml` | Strict | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ (80%) |
+| `ci-base.yml` | Base (all flags) | configurable | configurable | configurable | configurable | configurable | configurable |
+
+---
+
+## ci-simple.yml
+
+**Reference:** `mti-eng/actions/.github/workflows/ci-simple.yml@main`
+
+black + isort + flake8. pytest is opt-in with no coverage gate.
+
+### Inputs
+
+| Input | Default | Description |
+|-------|---------|-------------|
+| `python-version` | `"3.11"` | Python version |
+| `source-dir` | `"src"` | Source directory for format and lint checks |
+| `run-pytest` | `false` | Enable pytest (no coverage gate) |
+
+### Usage
+
+```yaml
+jobs:
+  ci:
+    uses: mti-eng/actions/.github/workflows/ci-simple.yml@main
+    secrets: inherit
+    with:
+      source-dir: "src"
+      run-pytest: true   # optional — omit to skip tests
+```
+
+---
+
+## ci-standard.yml
+
+**Reference:** `mti-eng/actions/.github/workflows/ci-standard.yml@main`
+
+black + isort + flake8 + pre-commit + pytest with 80% coverage gate.
+
+### Inputs
+
+| Input | Default | Description |
+|-------|---------|-------------|
+| `python-version` | `"3.11"` | Python version |
+| `source-dir` | `"src"` | Source directory for format and lint checks |
+| `coverage-threshold` | `"80"` | Minimum coverage % |
+
+### Usage
+
+```yaml
+jobs:
+  ci:
+    uses: mti-eng/actions/.github/workflows/ci-standard.yml@main
+    secrets: inherit
+    with:
+      source-dir: "src"
+```
+
+---
+
+## ci-strict.yml
+
+**Reference:** `mti-eng/actions/.github/workflows/ci-strict.yml@main`
+
+Everything: black + isort + flake8 + pylint + pre-commit + pytest with 80% coverage gate.
+
+### Inputs
+
+| Input | Default | Description |
+|-------|---------|-------------|
+| `python-version` | `"3.11"` | Python version |
+| `source-dir` | `"src"` | Source directory for format and lint checks |
+| `coverage-threshold` | `"80"` | Minimum coverage % |
+| `pylint-fail-under` | `"8.0"` | pylint minimum score |
+| `precommit-check-versions` | `true` | Fail if any pre-commit hooks are out of date |
+| `precommit-check-files` | `false` | Fail if PR-changed files do not pass pre-commit hooks |
+
+### Usage
+
+```yaml
+jobs:
+  ci:
+    uses: mti-eng/actions/.github/workflows/ci-strict.yml@main
+    secrets: inherit
+    with:
+      source-dir: "src"
+```
+
+---
+
+## ci-base.yml
+
+**Reference:** `mti-eng/actions/.github/workflows/ci-base.yml@main`
+
+Full-featured base with all flags exposed. Use this directly only when the tier wrappers
+don't cover your needs.
 
 **Job order:** format + lint (parallel) → test-pytest (blocked if any prior job failed)
 
-## Inputs
+### Inputs
 
 | Input | Default | Description |
 |-------|---------|-------------|
@@ -23,40 +124,6 @@ the test job declares them as dependencies and only runs if none failed or were 
 | `coverage-threshold` | `"80"` | pytest minimum coverage % |
 | `precommit-check-versions` | `true` | Fail if any pre-commit hooks are out of date |
 | `precommit-check-files` | `false` | Fail if any PR-changed files do not pass pre-commit hooks |
-
-## Usage
-
-```yaml
-# .github/workflows/ci.yml
-name: CI
-
-on:
-  push:
-    branches: [main]
-  pull_request:
-
-jobs:
-  ci:
-    uses: mti-eng/actions/.github/workflows/python-ci.yml@main
-    secrets: inherit
-    with:
-      python-version: "3.11"          # default
-      source-dir: "src"               # default
-
-      run-black: true                 # default
-      run-isort: true                 # default
-      run-flake8: true                # default
-
-      run-pylint: false               # default
-      pylint-fail-under: "8.0"        # default
-
-      run-precommit: false            # default
-      precommit-check-versions: true  # default
-      precommit-check-files: false    # default
-
-      run-pytest: false               # default — set true to enable tests
-      coverage-threshold: "80"        # default
-```
 
 > **`secrets: inherit`** automatically forwards `CI_TOKEN` from the calling repo into the
 > workflow so the test job can authenticate private package installs. See

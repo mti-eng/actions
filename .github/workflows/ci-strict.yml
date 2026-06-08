@@ -1,0 +1,54 @@
+# .github/workflows/ci-strict.yml
+---
+name: Python CI — Strict
+
+# Tier: Strict (everything on)
+#   black + isort + flake8 + pylint + pre-commit + pytest (80% coverage gate)
+#
+# For lighter checks use ci-standard.yml or ci-simple.yml
+
+"on":
+  workflow_call:
+    inputs:
+      python-version:
+        required: false
+        type: string
+        default: "3.11"
+      source-dir:
+        required: false
+        type: string
+        default: "src"
+      coverage-threshold:
+        required: false
+        type: string
+        default: "80"
+      pylint-fail-under:
+        required: false
+        type: string
+        default: "8.0"
+      precommit-check-versions:
+        required: false
+        type: boolean
+        default: true
+      precommit-check-files:
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  ci-strict:
+    uses: mti-eng/actions/.github/workflows/ci-base.yml@main
+    secrets: inherit
+    with:
+      python-version: ${{ inputs.python-version }}
+      source-dir: ${{ inputs.source-dir }}
+      run-black: true
+      run-isort: true
+      run-flake8: true
+      run-pylint: true
+      run-precommit: true
+      run-pytest: true
+      coverage-threshold: ${{ inputs.coverage-threshold }}
+      pylint-fail-under: ${{ inputs.pylint-fail-under }}
+      precommit-check-versions: ${{ inputs.precommit-check-versions }}
+      precommit-check-files: ${{ inputs.precommit-check-files }}
