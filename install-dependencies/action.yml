@@ -64,7 +64,8 @@ runs:
             uv sync --frozen
           fi
         else
-          echo "No uv.lock — using uv pip install"
+          echo "No uv.lock - using uv pip install"
+          uv venv
           if [ -n "${{ inputs.extras }}" ]; then
             uv pip install -e ".[${{ inputs.extras }}]"
           else
